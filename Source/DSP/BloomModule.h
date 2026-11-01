@@ -48,11 +48,11 @@ public:
 
     void setParams (const BloomParams& np) noexcept { p = np; }
 
-    void onHit (juce::Random& rng) noexcept
+    void onHit (juce::Random& hitRng) noexcept
     {
-        windRate = 1.0f + (rng.nextFloat() - 0.5f) * 1.4f * p.wind;
-        windDepth = 1.0f + (rng.nextFloat() - 0.5f) * p.wind;
-        windX = (rng.nextFloat() - 0.5f) * 0.35f * p.wind;
+        windRate = 1.0f + (hitRng.nextFloat() - 0.5f) * 1.4f * p.wind;
+        windDepth = 1.0f + (hitRng.nextFloat() - 0.5f) * p.wind;
+        windX = (hitRng.nextFloat() - 0.5f) * 0.35f * p.wind;
     }
 
     void process (float& l, float& r, float wet) noexcept

@@ -132,19 +132,19 @@ private:
 
         float process (VocoderModule& v, float mod, float ext) noexcept
         {
-            const auto& p = v.p;
+            const auto& prm = v.p;
             const float noise = v.rng.nextFloat() * 2.0f - 1.0f;
 
             // ---- carrier
             float c = 0.0f;
-            if (p.chan == 2)
+            if (prm.chan == 2)
                 c = ext;
             else
             {
-                switch (p.carrier)
+                switch (prm.carrier)
                 {
                     case 0: c = noise; break;
-                    case 1: c = saw (p.toneHz, v.sr); break;
+                    case 1: c = saw (prm.toneHz, v.sr); break;
                     case 2: c = mod; break;
                     default:
                     {
@@ -167,13 +167,13 @@ private:
             // ---- unvoiced: noise joins the carrier when the hit is bright
             const float h = std::abs (hf.process (mod));
             hfEnv += (h - hfEnv) * (h > hfEnv ? v.atk : v.rel);
-            if (p.carrier != 0 && p.unvoiced > 0.0f)
-                c += noise * p.unvoiced * juce::jmin (1.0f, hfEnv / v.uvThr);
+            if (prm.carrier != 0 && prm.unvoiced > 0.0f)
+                c += noise * prm.unvoiced * juce::jmin (1.0f, hfEnv / v.uvThr);
 
             // ---- band bank
-            const bool updateHeld = ! p.retro || (++retroCount & 63) == 0;
+            const bool updateHeld = ! prm.retro || (++retroCount & 63) == 0;
             float y = 0.0f, sum = 0.0f;
-            for (int b = 0; b < p.bands; ++b)
+            for (int b = 0; b < prm.bands; ++b)
             {
                 const auto i = (size_t) b;
                 const float a = std::abs (ana[i].process (mod));
@@ -183,10 +183,10 @@ private:
                 sum += held[i];
 
                 float e = held[i] < v.gateLin ? 0.0f : held[i];
-                e = p.depth * e + (1.0f - p.depth) * meanEnv;
+                e = prm.depth * e + (1.0f - prm.depth) * meanEnv;
 
                 float s = syn[i].process (c);
-                if (p.enhance)
+                if (prm.enhance)
                 {
                     const float as = std::abs (s);
                     cenv[i] += (as - cenv[i]) * (as > cenv[i] ? v.atk : v.rel);
@@ -194,7 +194,7 @@ private:
                 }
                 y += s * e;
             }
-            meanEnv = sum / (float) juce::jmax (1, p.bands);
+            meanEnv = sum / (float) juce::jmax (1, prm.bands);
             return y;
         }
 
