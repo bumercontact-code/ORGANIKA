@@ -295,8 +295,8 @@ private:
 class SlideSwitch : public juce::Component, private juce::Timer
 {
 public:
-    SlideSwitch (APVTS& s, const juce::String& id, juce::String left, juce::String right, Colour c)
-        : leftText (std::move (left)), rightText (std::move (right)), colour (c)
+    SlideSwitch (APVTS& s, const juce::String& id, juce::String leftLabel, juce::String rightLabel, Colour c)
+        : leftText (std::move (leftLabel)), rightText (std::move (rightLabel)), colour (c)
     {
         attachment = makeAttachment (s, id, [this] (float v) { right = v > 0.5f; startTimerHz (60); if (onChange) onChange (right); });
         knobPos = right ? 1.0f : 0.0f;
